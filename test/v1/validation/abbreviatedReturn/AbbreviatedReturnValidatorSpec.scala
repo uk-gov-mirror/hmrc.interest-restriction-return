@@ -81,6 +81,12 @@ class AbbreviatedReturnValidatorSpec extends BaseSpec {
           AgentNameNotSuppliedError().errorMessage
       }
 
+      "Agent name includes invalid characters" in {
+        leftSideError(abbreviatedReturnUltimateParentModel.copy(agentDetails = agentDetailsModelMax.
+          copy(agentName = Some("\u263A Ltd"))).validate).errorMessage shouldBe
+          AgentNameCharacterError("\u263A Ltd").errorMessage
+      }
+
       "Reporting Company details are invalid" in {
         leftSideError(abbreviatedReturnUltimateParentModel.copy(
           reportingCompany = reportingCompanyModel.copy(

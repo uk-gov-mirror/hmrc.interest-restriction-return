@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-package v1.validation.abbreviatedReturn
+package v1.validation
 
 import play.api.libs.json.{JsPath, Json}
 import v1.models.Validation.ValidationResult
-import v1.models.abbreviatedReturn.UkCompanyModel
-import v1.validation.BaseValidation
+import v1.models.{LEIModel, Validation}
+import config.Constants.legalEntityIdentifierRegex
 
-
-trait UkCompanyValidator extends BaseValidation {
+trait LEIValidator extends BaseValidation {
 
   import cats.implicits._
 
-  val ukCompany: UkCompanyModel
+  val leiModel: LEIModel
 
-  def validate(implicit path: JsPath): ValidationResult[UkCompanyModel] =
-      (ukCompany.utr.validate(path \ "utr"),
-        ukCompany.companyName.validate(path \ "companyName")
-      ).mapN((_, _) => ukCompany)
+  def validate(implicit path: JsPath): ValidationResult[LEIModel] = {
+
+    val isValidIdentifier = leiModel.lei matches legalEntityIdentifierRegex
+
+    if (isValidIdentifier) {
+      leiModel.validNec
+    } else {
+      LEIFormatError(leiModel).invalidNec
+    }
+  }
 }
 
+case class LEIFormatError(leiValue: LEIModel)(implicit val path: JsPath) extends Validation {
+  val errorMessage: String = "Legal Entity Identifier does not satisfy the correct regex format"
+  val value = Json.toJson(leiValue)
+}

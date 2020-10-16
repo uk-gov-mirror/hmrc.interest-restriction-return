@@ -27,6 +27,7 @@ trait UltimateParentValidator extends BaseValidation {
   val ultimateParentModel: UltimateParentModel
 
   private def validateCorrectCompanyDetailsSupplied(implicit path: JsPath): ValidationResult[UltimateParentModel] = {
+
     val ctutr = ultimateParentModel.ctutr.isDefined
     val sautr = ultimateParentModel.sautr.isDefined
     val countryCode = ultimateParentModel.countryOfIncorporation.isDefined

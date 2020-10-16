@@ -20,7 +20,7 @@ import assets.fullReturn.AllocatedRestrictionsConstants._
 import assets.fullReturn.UkCompanyConstants._
 import play.api.libs.json.JsPath
 import v1.models.AccountingPeriodModel
-import v1.validation.{BaseValidationSpec, CompanyNameLengthError, UTRChecksumError}
+import v1.validation.{BaseValidationSpec, CompanyNameCharacterError, CompanyNameLengthError, UTRChecksumError}
 
 class UkCompanyValidatorSpec extends BaseValidationSpec {
 
@@ -57,6 +57,11 @@ class UkCompanyValidatorSpec extends BaseValidationSpec {
       "CompanyName is invalid" in {
         leftSideError(ukCompanyModelReactivationMax.copy(companyName = companyNameTooLong).validate(groupAccountingPeriod)).errorMessage shouldBe
           CompanyNameLengthError(companyNameTooLong.name).errorMessage
+      }
+
+      "CompanyName contains invalid characters" in {
+        leftSideError(ukCompanyModelReactivationMax.copy(companyName = companyNameInvalidCharacters).validate(groupAccountingPeriod)).errorMessage shouldBe
+          CompanyNameCharacterError(companyNameInvalidCharacters.name).errorMessage
       }
 
       "netTaxInterestExpense is < 0" in {

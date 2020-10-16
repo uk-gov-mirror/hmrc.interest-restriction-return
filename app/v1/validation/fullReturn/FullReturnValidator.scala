@@ -21,6 +21,7 @@ import v1.models.Validation.ValidationResult
 import v1.models.fullReturn.{AdjustedGroupInterestModel, FullReturnModel, UkCompanyModel}
 import v1.models.{Original, ParentCompanyModel, Revised, Validation}
 import v1.validation.BaseValidation
+import config.Constants.explanatoryLongRegex
 
 trait FullReturnValidator extends BaseValidation {
 
@@ -152,6 +153,39 @@ trait FullReturnValidator extends BaseValidation {
     }
   }
 
+  private def validateEstimates: ValidationResult[Option[String]] = {
+    val groupFailure = fullReturnModel.groupEstimateReason match {
+      case Some(estimate) => {
+        if (estimate matches explanatoryLongRegex) {
+          None
+        } else {
+          Some(InvalidGroupEstimateDetails(estimate).invalidNec)
+        }
+      }
+      case _ => None
+    }
+    val companyFailure = fullReturnModel.companiesEstimateReason match {
+      case Some(estimate) => {
+        if (estimate matches explanatoryLongRegex) {
+          None
+        } else {
+          Some(InvalidGroupEstimateDetails(estimate).invalidNec)
+        }
+      }
+      case _ => None
+    }
+
+    if (groupFailure.isDefined) {
+      groupFailure.get
+    } else if (companyFailure.isDefined) {
+      companyFailure.get
+    } else {
+      fullReturnModel.groupEstimateReason.validNec
+    }
+
+  }
+
+
   def validate: ValidationResult[FullReturnModel] = {
 
     val validatedUkCompanies =
@@ -168,6 +202,7 @@ trait FullReturnValidator extends BaseValidation {
       fullReturnModel.groupLevelElections.validate(JsPath \ "groupLevelElections"),
       validatedUkCompanies,
       validateAngie,
+      validateEstimates,
       validateNotBothRestrictionsAndReactivations,
       validateAllocatedRestrictions,
       validateAllocatedReactivations,
@@ -182,7 +217,7 @@ trait FullReturnValidator extends BaseValidation {
       validateAppointedReporter,
       fullReturnModel.groupLevelAmount.validate(JsPath \ "groupLevelAmount"),
       optionValidations(fullReturnModel.adjustedGroupInterest.map(_.validate(JsPath \ "adjustedGroupInterest")))
-      ).mapN((_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => fullReturnModel)
+      ).mapN((_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _) => fullReturnModel)
   }
 }
 
@@ -300,5 +335,17 @@ case object AdjustedNetGroupInterestNotSupplied extends Validation {
 case class AdjustedNetGroupInterestSupplied(details: AdjustedGroupInterestModel) extends Validation {
   val errorMessage: String = "Adjusted Group Interest should not be supplied as Group Ratio is not elected"
   val path = JsPath \ "adjustedGroupInterest"
+  val value = Json.toJson(details)
+}
+
+case class InvalidGroupEstimateDetails(details: String) extends Validation {
+  val errorMessage: String = "The group estimate text contains invalid characters or length. Please adhere to the API specification"
+  val path = JsPath \ "groupEstimateReason"
+  val value = Json.toJson(details)
+}
+
+case class InvalidCompaniesEstimateDetails(details: String) extends Validation {
+  val errorMessage: String = "The companies estimate text contains invalid characters or length. Please adhere to the API specification"
+  val path = JsPath \ "companiesEstimateReason"
   val value = Json.toJson(details)
 }

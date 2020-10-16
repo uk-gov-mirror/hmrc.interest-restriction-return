@@ -19,6 +19,10 @@ package config
 object Constants {
 
   val maxTwoDecimalsRegex = """^(\d+(\.\d{1,2})?)$"""
+  val explanatoryShortRegex = """^[ -~¢-¥©®±×÷‐₠-₿−-∝≈≠≣-≥]{1,5000}$"""
+  val explanatoryLongRegex = """^[ -~¢-¥©®±×÷‐₠-₿−-∝≈≠≣-≥]{1,10000}$"""
+  val companyNameRegex = """^[ -~¡-ÿĀ-ʯḀ-ỿ‐-―‘-‟₠-₿ÅK]{1,160}$"""
+  val legalEntityIdentifierRegex = """^[0-9A-Z]{18}[0-9]{2}$"""
   val intMax = 32767
   val countryCodeLength = 2
   val validCountryCodes: Seq[String] = Seq(

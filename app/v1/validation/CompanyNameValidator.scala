@@ -19,19 +19,28 @@ package v1.validation
 import play.api.libs.json.{JsPath, JsString}
 import v1.models.Validation.ValidationResult
 import v1.models.{CompanyNameModel, Validation}
+import config.Constants.companyNameRegex
 
 trait CompanyNameValidator extends BaseValidation {
 
   import cats.implicits._
 
+
   val companyNameModel: CompanyNameModel
 
   private def validateCompanyName(implicit topPath: JsPath): ValidationResult[String] = {
+
     if (companyNameModel.name.length >= 1 && companyNameModel.name.length <= 160) {
-      companyNameModel.name.validNec
+      val isValidName = companyNameModel.name matches companyNameRegex
+      if (isValidName) {
+        companyNameModel.name.validNec
+      } else {
+        CompanyNameCharacterError(companyNameModel.name).invalidNec
+      }
     } else {
       CompanyNameLengthError(companyNameModel.name).invalidNec
     }
+
   }
 
   def validate(implicit path: JsPath): ValidationResult[CompanyNameModel] =
@@ -40,5 +49,10 @@ trait CompanyNameValidator extends BaseValidation {
 
 case class CompanyNameLengthError(name: String)(implicit val path: JsPath) extends Validation {
   val errorMessage: String = s"Company name is ${name.length} character${if (name.length != 1) "s" else ""} long and should be between 1 and 160"
+  val value = JsString(name)
+}
+
+case class CompanyNameCharacterError(name: String)(implicit val path: JsPath) extends Validation {
+  val errorMessage: String = "Company name contains illegal characters"
   val value = JsString(name)
 }

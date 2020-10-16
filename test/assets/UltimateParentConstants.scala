@@ -28,7 +28,8 @@ object UltimateParentConstants extends BaseConstants {
     isUk = true,
     ctutr = Some(ctutr),
     sautr = Some(sautr),
-    countryOfIncorporation = Some(nonUkCountryCode)
+    countryOfIncorporation = Some(nonUkCountryCode),
+    legalEntityIdentifier = Some(validLegalEntityIdentifier)
   )
 
   val ultimateParentModelMin = UltimateParentModel(
@@ -36,7 +37,8 @@ object UltimateParentConstants extends BaseConstants {
     isUk = true,
     ctutr = None,
     sautr = None,
-    countryOfIncorporation = None
+    countryOfIncorporation = None,
+    legalEntityIdentifier = None
   )
 
   val ultimateParentModelUkCompany = UltimateParentModel(
@@ -44,7 +46,8 @@ object UltimateParentConstants extends BaseConstants {
     isUk = true,
     ctutr = Some(ctutr),
     sautr = None,
-    countryOfIncorporation = None
+    countryOfIncorporation = None,
+    legalEntityIdentifier = Some(validLegalEntityIdentifier)
   )
 
   val ultimateParentModelNonUkCompany = UltimateParentModel(
@@ -52,7 +55,8 @@ object UltimateParentConstants extends BaseConstants {
     isUk = true,
     ctutr = None,
     sautr = None,
-    countryOfIncorporation = Some(nonUkCountryCode)
+    countryOfIncorporation = Some(nonUkCountryCode),
+    legalEntityIdentifier = None
   )
 
   val ultimateParentModelUkPartnership = UltimateParentModel(
@@ -60,7 +64,8 @@ object UltimateParentConstants extends BaseConstants {
     isUk = true,
     ctutr = None,
     sautr = Some(sautr),
-    countryOfIncorporation = None
+    countryOfIncorporation = None,
+    legalEntityIdentifier = None
   )
 
   val ultimateParentJsonMax = Json.obj(
@@ -68,7 +73,8 @@ object UltimateParentConstants extends BaseConstants {
     "isUk" -> true,
     "ctutr" -> ctutr,
     "sautr" -> sautr,
-    "countryOfIncorporation" -> nonUkCountryCode
+    "countryOfIncorporation" -> nonUkCountryCode,
+    "legalEntityIdentifier" -> validLegalEntityIdentifier
   )
 
   val ultimateParentJsonMin = Json.obj(
@@ -79,7 +85,8 @@ object UltimateParentConstants extends BaseConstants {
   val ultimateParentJsonUkCompany = Json.obj(
     "companyName" -> companyName,
     "isUk" -> true,
-    "ctutr" -> ctutr
+    "ctutr" -> ctutr,
+    "legalEntityIdentifier" -> validLegalEntityIdentifier
   )
 
   val ultimateParentJsonNonUkCompany = Json.obj(

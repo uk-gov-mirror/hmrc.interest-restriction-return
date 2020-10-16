@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package v1.validation.abbreviatedReturn
+package v1.models
 
-import play.api.libs.json.{JsPath, Json}
-import v1.models.Validation.ValidationResult
-import v1.models.abbreviatedReturn.UkCompanyModel
-import v1.validation.BaseValidation
+import play.api.libs.json.{JsPath, JsString, Reads, Writes}
+import v1.validation.LEIValidator
 
-
-trait UkCompanyValidator extends BaseValidation {
-
-  import cats.implicits._
-
-  val ukCompany: UkCompanyModel
-
-  def validate(implicit path: JsPath): ValidationResult[UkCompanyModel] =
-      (ukCompany.utr.validate(path \ "utr"),
-        ukCompany.companyName.validate(path \ "companyName")
-      ).mapN((_, _) => ukCompany)
+case class LEIModel(lei: String) extends LEIValidator{
+  override val leiModel = this
 }
+
+object LEIModel {
+
+  implicit val reads: Reads[LEIModel] = JsPath.read[String].map(LEIModel.apply)
+
+  implicit val writes: Writes[LEIModel] = Writes {
+    model => JsString(model.lei)
+  }
+
+}
+
 

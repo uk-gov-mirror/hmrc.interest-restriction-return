@@ -18,7 +18,7 @@ package v1.validation.abbreviatedReturn
 
 import assets.abbreviatedReturn.UkCompanyConstants._
 import play.api.libs.json.JsPath
-import v1.validation.{BaseValidationSpec, CompanyNameLengthError, UTRChecksumError}
+import v1.validation.{BaseValidationSpec, CompanyNameLengthError, CompanyNameCharacterError, UTRChecksumError}
 
 class UkCompanyValidatorSpec extends BaseValidationSpec {
 
@@ -39,9 +39,14 @@ class UkCompanyValidatorSpec extends BaseValidationSpec {
         leftSideError(ukCompanyModel.copy(utr = invalidUtr).validate).errorMessage shouldBe UTRChecksumError(invalidUtr).errorMessage
       }
 
-      "CompanyName is invalid" in {
+      "CompanyName is invalid length" in {
         leftSideError(ukCompanyModel.copy(companyName = companyNameTooLong).validate).errorMessage shouldBe
           CompanyNameLengthError(companyNameTooLong.name).errorMessage
+      }
+
+      "CompanyName contains invalid characters" in {
+        leftSideError(ukCompanyModel.copy(companyName = companyNameInvalidCharacters).validate).errorMessage shouldBe
+          CompanyNameCharacterError(companyNameInvalidCharacters.name).errorMessage
       }
     }
   }

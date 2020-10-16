@@ -19,6 +19,7 @@ package v1.validation
 import play.api.libs.json.{JsPath, JsString, Json}
 import v1.models.Validation.ValidationResult
 import v1.models.{AgentDetailsModel, Validation}
+import config.Constants.companyNameRegex
 
 trait AgentDetailsValidator extends BaseValidation {
   import cats.implicits._
@@ -26,10 +27,10 @@ trait AgentDetailsValidator extends BaseValidation {
   val agentDetailsModel: AgentDetailsModel
 
   private def validateAgentName(implicit topPath: JsPath): ValidationResult[Option[String]]  = {
-    val lengthCheck = if(agentDetailsModel.agentName.fold(true: Boolean){name => name.length >= 1 && name.length <= 160}){
+    val lengthCheck = if(agentDetailsModel.agentName.fold(true: Boolean){name => name matches companyNameRegex }){
       agentDetailsModel.agentName.validNec
     } else {
-      AgentNameLengthError(agentDetailsModel.agentName.get).invalidNec
+      AgentNameCharacterError(agentDetailsModel.agentName.get).invalidNec
     }
     val suppliedCheck = (agentDetailsModel.agentActingOnBehalfOfCompany,agentDetailsModel.agentName) match {
       case (true,None) => AgentNameNotSuppliedError().invalidNec
@@ -44,7 +45,7 @@ trait AgentDetailsValidator extends BaseValidation {
 }
 
 case class AgentNameLengthError(name: String)(implicit topPath: JsPath) extends Validation {
-  val errorMessage: String = "Agent name must be between 1-160 characters if supplied"
+  val errorMessage: String = "Agent name must be 1-160 chars and contain legal characters"
   val path = topPath \ "agentName"
   val value = JsString(name)
 }
@@ -58,5 +59,10 @@ case class AgentNameNotSuppliedError(implicit topPath: JsPath) extends Validatio
 case class AgentNameSuppliedError(name: String)(implicit topPath: JsPath) extends Validation {
   val errorMessage: String = "Agent name must not be supplied if agent is not acting on behalf of company"
   val path = topPath \ "agentName"
+  val value = JsString(name)
+}
+
+case class AgentNameCharacterError(name: String)(implicit val path: JsPath) extends Validation {
+  val errorMessage: String = "Agent name must be 1-160 chars and contain legal characters"
   val value = JsString(name)
 }

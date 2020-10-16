@@ -21,6 +21,7 @@ import v1.models.Validation.ValidationResult
 import v1.models.abbreviatedReturn.AbbreviatedReturnModel
 import v1.models.{Original, ParentCompanyModel, Revised, Validation}
 import v1.validation.BaseValidation
+import config.Constants.explanatoryShortRegex
 
 trait AbbreviatedReturnValidator extends BaseValidation {
 
@@ -29,10 +30,21 @@ trait AbbreviatedReturnValidator extends BaseValidation {
   val abbreviatedReturnModel: AbbreviatedReturnModel
 
   private def validateRevisedReturnDetails: ValidationResult[Option[String]] = {
+
     (abbreviatedReturnModel.submissionType, abbreviatedReturnModel.revisedReturnDetails) match {
       case (Original, Some(details)) => RevisedReturnDetailsSupplied(details).invalidNec
       case (Revised, None) => RevisedReturnDetailsNotSupplied.invalidNec
-      case _ => abbreviatedReturnModel.revisedReturnDetails.validNec
+      case _ => { abbreviatedReturnModel.revisedReturnDetails match {
+          case Some(details: String) => {
+            if (details matches explanatoryShortRegex) {
+              abbreviatedReturnModel.revisedReturnDetails.validNec
+            } else {
+              RevisedReturnDetailsSupplied(details).invalidNec
+            }
+          }
+          case _ => abbreviatedReturnModel.revisedReturnDetails.validNec
+        }
+      }
     }
   }
 
@@ -92,6 +104,12 @@ case object RevisedReturnDetailsNotSupplied extends Validation {
 
 case class RevisedReturnDetailsSupplied(details: String) extends Validation {
   val errorMessage: String = "A description of the amendments made to the return cannot be supplied if this is an original return"
+  val path = JsPath \ "revisedReturnDetails"
+  val value = Json.toJson(details)
+}
+
+case class RevisedReturnDetailsInvalidFormat(details: String) extends Validation {
+  val errorMessage: String = "The revised returns contain invalid characters, please refer to the regex in the API"
   val path = JsPath \ "revisedReturnDetails"
   val value = Json.toJson(details)
 }

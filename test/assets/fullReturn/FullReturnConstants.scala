@@ -39,6 +39,8 @@ object FullReturnConstants {
 
   val ackRef = "ackRef"
   val revisedReturnDetails = "some details"
+  val groupEstimateReason = "some group estimate reason"
+  val companiesEstimateReason = "some companies estimate reason"
   val angie: BigDecimal = 1.11
   val totalReactivations: BigDecimal = ukCompanyModelReactivationMax.allocatedReactivations.foldLeft[BigDecimal](0) {
     (total, company) => total + company.currentPeriodReactivation
@@ -63,6 +65,8 @@ object FullReturnConstants {
     ukCompanies = Seq(ukCompanyModelMax, ukCompanyModelMin),
     angie = Some(angie),
     returnContainsEstimates = true,
+    groupEstimateReason = Some(groupEstimateReason),
+    companiesEstimateReason = Some(companiesEstimateReason),
     groupSubjectToInterestRestrictions = false,
     groupSubjectToInterestReactivation = true,
     totalReactivation = totalReactivations,
@@ -89,6 +93,8 @@ object FullReturnConstants {
     "aggregateAllocatedReactivations" -> currentPeriodReactivation,
     "angie" -> angie,
     "returnContainsEstimates" -> true,
+    "groupEstimateReason" -> groupEstimateReason,
+    "companiesEstimateReason" -> companiesEstimateReason,
     "groupSubjectToInterestRestrictions" -> false,
     "groupSubjectToInterestReactivation" -> true,
     "totalReactivation" -> fullReturnModelMax.aggregateAllocatedReactivations.getOrElse[BigDecimal](0),
@@ -110,6 +116,8 @@ object FullReturnConstants {
     ukCompanies = Seq(ukCompanyModelMax, ukCompanyModelMax, ukCompanyModelMax, ukCompanyModelMin),
     angie = Some(angie),
     returnContainsEstimates = true,
+    groupEstimateReason = Some(groupEstimateReason),
+    companiesEstimateReason = Some(companiesEstimateReason),
     groupSubjectToInterestRestrictions = false,
     groupSubjectToInterestReactivation = true,
     totalReactivation = totalReactivations,
@@ -136,6 +144,8 @@ object FullReturnConstants {
     "aggregateAllocatedReactivations" -> (3 * currentPeriodReactivation),
     "angie" -> angie,
     "returnContainsEstimates" -> true,
+    "groupEstimateReason" -> groupEstimateReason,
+    "companiesEstimateReason" -> companiesEstimateReason,
     "groupSubjectToInterestRestrictions" -> false,
     "groupSubjectToInterestReactivation" -> true,
     "totalReactivation" -> totalReactivations,
@@ -157,6 +167,8 @@ object FullReturnConstants {
     ukCompanies = Seq(ukCompanyModelMin, ukCompanyModelMin, ukCompanyModelMin, ukCompanyModelMax),
     angie = Some(angie),
     returnContainsEstimates = true,
+    groupEstimateReason = Some(groupEstimateReason),
+    companiesEstimateReason = Some(companiesEstimateReason),
     groupSubjectToInterestRestrictions = false,
     groupSubjectToInterestReactivation = true,
     totalReactivation = totalReactivations,
@@ -183,6 +195,8 @@ object FullReturnConstants {
     "aggregateAllocatedReactivations" -> currentPeriodReactivation,
     "angie" -> angie,
     "returnContainsEstimates" -> true,
+    "groupEstimateReason" -> groupEstimateReason,
+    "companiesEstimateReason" -> companiesEstimateReason,
     "groupSubjectToInterestRestrictions" -> false,
     "groupSubjectToInterestReactivation" -> true,
     "totalReactivation" -> totalReactivations,
@@ -206,6 +220,8 @@ object FullReturnConstants {
     ukCompanies = Seq(ukCompanyModelReactivationMax, ukCompanyModelReactivationMax), // Net Tax Income =  2 * £30 = £60.00
     angie = Some(angie),
     returnContainsEstimates = true,
+    groupEstimateReason = Some(groupEstimateReason),
+    companiesEstimateReason = Some(companiesEstimateReason),
     groupSubjectToInterestRestrictions = false,
     groupSubjectToInterestReactivation = true,
     totalReactivation = totalReactivations * 2,
@@ -232,6 +248,8 @@ object FullReturnConstants {
     "aggregateAllocatedReactivations" -> currentPeriodReactivation,
     "angie" -> angie,
     "returnContainsEstimates" -> true,
+    "groupEstimateReason" -> groupEstimateReason,
+    "companiesEstimateReason" -> companiesEstimateReason,
     "groupSubjectToInterestRestrictions" -> false,
     "groupSubjectToInterestReactivation" -> true,
     "totalReactivation" -> totalReactivations * 2,
@@ -254,6 +272,8 @@ object FullReturnConstants {
     ukCompanies = Seq(ukCompanyModelReactivationMax),
     angie = Some(angie),
     returnContainsEstimates = true,
+    groupEstimateReason = Some(groupEstimateReason),
+    companiesEstimateReason = Some(companiesEstimateReason),
     groupSubjectToInterestRestrictions = false,
     groupSubjectToInterestReactivation = true,
     totalReactivation = totalReactivations,
@@ -277,6 +297,8 @@ object FullReturnConstants {
     ukCompanies = Seq(ukCompanyModelMin),
     angie = None,
     returnContainsEstimates = true,
+    groupEstimateReason = None,
+    companiesEstimateReason = None,
     groupSubjectToInterestRestrictions = false,
     groupSubjectToInterestReactivation = true,
     totalReactivation = totalReactivations,
