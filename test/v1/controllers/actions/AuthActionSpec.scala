@@ -43,7 +43,7 @@ class AuthActionSpec extends BaseSpec {
       "Not let through any requests with `internal` parameters" in {
         val authAction = new AuthAction(new FakeFailingAuthConnector(new BearerTokenExpired()), bodyParsers)
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(FakeRequest("GET", "/return/test?internal=5"))
+        val result = controller.onPageLoad()(FakeRequest("GET", "/return/test?param=5&internal=2"))
 
         status(result) shouldBe UNAUTHORIZED
       }
