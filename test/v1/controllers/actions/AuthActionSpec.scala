@@ -17,6 +17,7 @@
 package v1.controllers.actions
 
 import play.api.mvc.{Action, AnyContent, Results}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.Credentials
@@ -30,6 +31,23 @@ class AuthActionSpec extends BaseSpec {
   }
 
   "Auth Action" when {
+    "Hitting an internal endpoint" should {
+      "Not apply any auth" in {
+        val authAction = new AuthAction(new FakeFailingAuthConnector(new BearerTokenExpired()), bodyParsers)
+        val controller = new Harness(authAction)
+        val result = controller.onPageLoad()(FakeRequest("GET", "/internal/return/test"))
+
+        status(result) shouldBe OK
+      }
+
+      "Not let through any requests with `internal` parameters" in {
+        val authAction = new AuthAction(new FakeFailingAuthConnector(new BearerTokenExpired()), bodyParsers)
+        val controller = new Harness(authAction)
+        val result = controller.onPageLoad()(FakeRequest("GET", "/return/test?internal=5"))
+
+        status(result) shouldBe UNAUTHORIZED
+      }
+    }
 
     "the user is logged in with providerId returned" must {
 

@@ -36,12 +36,16 @@ class AuthAction @Inject()(override val authConnector: AuthConnector,
 
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSessionAndRequest(request.headers, request = Some(request))
 
-    authorised().retrieve(Retrievals.credentials) {
-      _.map { credential =>
-        block(IdentifierRequest(request, credential.providerId))
-      }.getOrElse(throw UnsupportedAuthProvider("Unable to retrieve providerId"))
-    } recover {
-      case _ => Unauthorized("No Active Session")
+    if (request.path.contains("internal")) {
+      block(IdentifierRequest(request, "mdtp-ui"))
+    } else {
+      authorised().retrieve(Retrievals.credentials) {
+        _.map { credential =>
+          block(IdentifierRequest(request, credential.providerId))
+        }.getOrElse(throw UnsupportedAuthProvider("Unable to retrieve providerId"))
+      } recover {
+        case _ => Unauthorized("No Active Session")
+      }
     }
   }
 }

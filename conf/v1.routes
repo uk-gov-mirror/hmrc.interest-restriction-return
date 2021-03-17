@@ -9,3 +9,6 @@ POST       /reporting-company/revoke                    v1.controllers.RevokeRep
 POST       /return/abbreviated                          v1.controllers.AbbreviatedReturnController.submitAbbreviatedReturn()
 
 POST       /return/full                                 v1.controllers.FullReturnController.submit()
+
+POST       /internal/return/full                        v1.controllers.FullReturnController.submit()
+
