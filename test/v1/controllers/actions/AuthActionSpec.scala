@@ -60,6 +60,14 @@ class AuthActionSpec extends BaseSpec {
         result.apply(fakeRequest.withHeaders("initialHeader" -> "test")).header.headers.get("initialHeader").isDefined shouldBe true
       }
 
+      "overwrite any existing `isInternal` headers" in {
+        val authAction = new AuthAction(new FakeSuccessAuthConnector[Option[Credentials]](Some(Credentials("id","SCP"))), bodyParsers)
+        val result = authAction.withInternalExtraHeaders(false,authAction(bodyParsers)(implicit request => {
+          Future.successful(addHeaders(request))}))
+
+        result.apply(fakeRequest.withHeaders("isInternal" -> "true")).header.headers.get("isInternal").get shouldBe "false"
+      }
+
 
     }
 

@@ -48,7 +48,7 @@ class AuthAction @Inject()(override val authConnector: AuthConnector,
 
 
   def withInternalExtraHeaders[A](isInternalRequest: Boolean, action: Action[A]): Action[A] = async(action.parser) { request =>
-    action(request.withHeaders(request.headers.add("isInternal" -> isInternalRequest.toString)))
+    action(request.withHeaders(request.headers.remove("isInternal").add("isInternal" -> isInternalRequest.toString)))
   }
 }
 
