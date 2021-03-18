@@ -16,12 +16,16 @@
 
 package v1.controllers.actions
 
-import play.api.mvc.{Action, AnyContent, Results}
+import play.api.http.HttpEntity
+import play.api.mvc.{Action, AnyContent, ResponseHeader, Result, Results}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.Credentials
 import utils.BaseSpec
 import v1.connectors.mocks.{FakeFailingAuthConnector, FakeSuccessAuthConnector}
+import v1.models.requests.IdentifierRequest
+
+import scala.concurrent.Future
 
 class AuthActionSpec extends BaseSpec {
 
@@ -30,6 +34,34 @@ class AuthActionSpec extends BaseSpec {
   }
 
   "Auth Action" when {
+    "calling withInternalExtraHeaders" should {
+      "add if it is internal" in {
+        val authAction = new AuthAction(new FakeSuccessAuthConnector[Option[Credentials]](Some(Credentials("id","SCP"))), bodyParsers)
+        val result = authAction.withInternalExtraHeaders(true,authAction(bodyParsers)(implicit request => {
+          Future.successful(addHeaders(request))}))
+
+        result.apply(fakeRequest).header.headers.get("isInternal").get shouldBe "true"
+      }
+
+      "add if it is not internal" in {
+        val authAction = new AuthAction(new FakeSuccessAuthConnector[Option[Credentials]](Some(Credentials("id","SCP"))), bodyParsers)
+        val result = authAction.withInternalExtraHeaders(false,authAction(bodyParsers)(implicit request => {
+          Future.successful(addHeaders(request))}))
+
+        result.apply(fakeRequest).header.headers.get("isInternal").get shouldBe "false"
+      }
+
+      "not delete any existing headers" in {
+        val authAction = new AuthAction(new FakeSuccessAuthConnector[Option[Credentials]](Some(Credentials("id","SCP"))), bodyParsers)
+        val result = authAction.withInternalExtraHeaders(false,authAction(bodyParsers)(implicit request => {
+          Future.successful(addHeaders(request))}))
+
+        result.apply(fakeRequest).header.headers.get("isInternal").get shouldBe "false"
+        result.apply(fakeRequest.withHeaders("initialHeader" -> "test")).header.headers.get("initialHeader").isDefined shouldBe true
+      }
+
+
+    }
 
     "the user is logged in with providerId returned" must {
 
@@ -138,5 +170,9 @@ class AuthActionSpec extends BaseSpec {
         status(result) shouldBe UNAUTHORIZED
       }
     }
+  }
+
+  private def addHeaders(request: IdentifierRequest[AnyContent]) = {
+    Result(header = ResponseHeader(1, request.headers.map(h => h.toSimpleMap)), HttpEntity.NoEntity)
   }
 }

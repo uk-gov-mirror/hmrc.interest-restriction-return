@@ -25,6 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.HeaderCarrierConverter
 import v1.models.requests.IdentifierRequest
 
+
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthAction @Inject()(override val authConnector: AuthConnector,
@@ -44,4 +45,10 @@ class AuthAction @Inject()(override val authConnector: AuthConnector,
       case _ => Unauthorized("No Active Session")
     }
   }
+
+
+  def withInternalExtraHeaders[A](isInternalRequest: Boolean, action: Action[A]): Action[A] = async(action.parser) { request =>
+    action(request.withHeaders(request.headers.add("isInternal" -> { if (isInternalRequest) "true" else "false" })))
+  }
 }
+
