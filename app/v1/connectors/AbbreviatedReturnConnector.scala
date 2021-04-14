@@ -36,7 +36,8 @@ class AbbreviatedReturnConnector @Inject()(httpClient: HttpClient,
 
   def submitAbbreviatedReturn(abbreviatedReturnModel: AbbreviatedReturnModel)
                              (implicit hc: HeaderCarrier, ec: ExecutionContext, request: IdentifierRequest[_]): Future[SubmissionResponse] = {
-
+    logger.debug(s"[AbbreviatedReturnConnector][submitAbbreviatedReturn] URL: $abbreviatedReturnUrl")
+    logger.debug(s"[AbbreviatedReturnConnector][submitAbbreviatedReturn] Headers: ${desHc.headers}")
     httpClient.POST(abbreviatedReturnUrl, abbreviatedReturnModel)(AbbreviatedReturnModel.format, AbbreviatedReturnReads, desHc, ec)
   }
 

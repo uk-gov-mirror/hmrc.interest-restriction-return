@@ -36,7 +36,8 @@ class FullReturnConnector @Inject()(httpClient: HttpClient,
 
   def submit(fullReturnModel: FullReturnModel)
              (implicit hc: HeaderCarrier, ec: ExecutionContext, request: IdentifierRequest[_]): Future[SubmissionResponse] = {
-
+    logger.debug(s"[FullReturnConnector][submit] URL: $fullReturnUrl")
+    logger.debug(s"[FullReturnConnector][submit] Headers: ${desHc.headers}")
     httpClient.POST(fullReturnUrl, fullReturnModel)(FullReturnModel.format, FullReturnReads, desHc, ec)
   }
 
